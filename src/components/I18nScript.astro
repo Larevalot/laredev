@@ -1,0 +1,35 @@
+---
+import { ui } from '../i18n/ui';
+
+const translations = ui;
+---
+
+<script is:inline define:vars={{ translations }}>
+  function getLang() {
+    return localStorage.getItem('lang') || 'en';
+  }
+
+  function updateContent(lang) {
+    const elements = document.querySelectorAll('[data-i18n]');
+    elements.forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (translations[lang] && translations[lang][key]) {
+        el.textContent = translations[lang][key];
+      }
+    });
+
+    const placeholders = document.querySelectorAll('[data-i18n-placeholder]');
+    placeholders.forEach(el => {
+      const key = el.getAttribute('data-i18n-placeholder');
+      if (translations[lang] && translations[lang][key]) {
+        el.setAttribute('placeholder', translations[lang][key]);
+      }
+    });
+  }
+
+  updateContent(getLang());
+
+  document.addEventListener('langchange', (e) => {
+    updateContent(e.detail.lang);
+  });
+</script>

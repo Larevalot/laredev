@@ -1,0 +1,392 @@
+---
+---
+
+<div id="ai-chat-container" class="fixed z-[9999]" style="bottom: 24px; right: 24px;">
+  <div id="ai-chat-tooltip" class="absolute bottom-16 right-0 bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-lg px-4 py-3 shadow-lg max-w-[260px] transition-all duration-300" style="display: none; opacity: 0;">
+    <p id="ai-chat-tooltip-text" class="text-[var(--text-primary)] text-xs leading-relaxed"></p>
+    <div class="absolute -bottom-1.5 right-6 w-3 h-3 bg-[var(--bg-secondary)] border-r border-b border-[var(--glass-border)] transform rotate-45"></div>
+  </div>
+
+  <button id="ai-chat-toggle" class="w-14 h-14 rounded-full overflow-hidden shadow-lg hover:scale-110 transition-transform duration-300 border-2 border-[var(--accent)]" aria-label="Open AI Chat">
+    <img src="/chat-avatar.png" alt="AI Chat" class="w-full h-full object-cover" />
+  </button>
+
+  <div id="ai-chat-panel" class="absolute bg-[var(--bg-secondary)] border border-[var(--glass-border)] rounded-lg shadow-2xl overflow-hidden" style="display: none; bottom: 70px; right: 0; width: 380px; height: 500px; min-width: 300px; min-height: 350px; flex-direction: column;">
+    <div id="ai-chat-header" class="p-4 bg-[var(--bg-tertiary)] border-b border-[var(--glass-border)] flex items-center justify-between cursor-move select-none">
+      <div class="flex items-center gap-2">
+        <div class="w-6 h-6 rounded-full overflow-hidden">
+          <img src="/chat-avatar.png" alt="AI" class="w-full h-full object-cover" />
+        </div>
+        <span class="text-[var(--text-primary)] font-semibold text-sm">AI Assistant</span>
+      </div>
+      <button id="ai-chat-close" class="w-7 h-7 flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-primary)] rounded transition-all">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <div id="ai-chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4">
+      <div class="flex gap-3">
+        <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
+          <img src="/chat-avatar.png" alt="AI Assistant" class="w-full h-full object-cover" />
+        </div>
+        <div class="bg-[var(--bg-tertiary)] rounded-lg rounded-tl-none p-3 max-w-[80%]">
+          <p class="text-[var(--text-primary)] text-sm">Hello! How can I help you?</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-4 border-t border-[var(--glass-border)]">
+      <form id="ai-chat-form" class="flex gap-2">
+        <input id="ai-chat-input" type="text" placeholder="Type your message..." class="flex-1 px-4 py-2 bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-lg text-[var(--text-primary)] text-sm focus:outline-none focus:border-[var(--accent)] transition-colors" autocomplete="off" />
+        <button type="submit" class="px-4 py-2 bg-[var(--accent)] text-[var(--bg-primary)] rounded-lg hover:bg-[var(--accent-light)] transition-colors">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+          </svg>
+        </button>
+      </form>
+    </div>
+
+    <div id="ai-chat-resize" class="absolute top-0 left-0 w-6 h-6 cursor-nwse-resize z-20" style="pointer-events: auto;">
+      <svg class="w-4 h-4 m-1 text-[var(--text-muted)] opacity-40 hover:opacity-80 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4L20 20M4 12V4h8" />
+      </svg>
+    </div>
+  </div>
+</div>
+
+<style>
+  @keyframes chat-bounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+  @keyframes tooltip-pulse {
+    0%, 100% { opacity: 1; transform: translateY(0); }
+    50% { opacity: 0.9; transform: translateY(-2px); }
+  }
+  #ai-chat-toggle.has-notification {
+    animation: chat-bounce 1s ease-in-out 3;
+  }
+  #ai-chat-tooltip.show {
+    display: block !important;
+    opacity: 1 !important;
+    animation: tooltip-pulse 3s ease-in-out infinite;
+  }
+</style>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    const chatToggle = document.getElementById('ai-chat-toggle');
+    const chatPanel = document.getElementById('ai-chat-panel');
+    const chatClose = document.getElementById('ai-chat-close');
+    const chatForm = document.getElementById('ai-chat-form');
+    const chatInput = document.getElementById('ai-chat-input');
+    const chatMessages = document.getElementById('ai-chat-messages');
+    const chatHeader = document.getElementById('ai-chat-header');
+    const chatResize = document.getElementById('ai-chat-resize');
+    const tooltip = document.getElementById('ai-chat-tooltip');
+    const tooltipText = document.getElementById('ai-chat-tooltip-text');
+
+    if (!chatToggle || !chatPanel) {
+      console.error('AI Chat elements not found');
+      return;
+    }
+
+    const MIMO_API_URL = '/api/chat';
+
+    let panelWidth = 380;
+    let panelHeight = 500;
+    let chatOpen = false;
+
+    const autoMessages = {
+      en: "I'll help you with whatever you need to know that you can't find on the page!",
+      es: "¡Te ayudaré con lo que necesites saber que no encuentres en la página!",
+      it: "Ti aiuterò con tutto ciò che devi sapere e che non trovi nella pagina!",
+      zh: "我会帮助你了解页面上找不到的信息！",
+      ja: "ページにない情報をお手伝いします！"
+    };
+
+    const placeholders = {
+      en: 'Type your message...',
+      es: 'Escribe tu mensaje...',
+      it: 'Scrivi il tuo messaggio...',
+      zh: '输入您的消息...',
+      ja: 'メッセージを入力...'
+    };
+
+    function getLang() {
+      return localStorage.getItem('lang') || 'en';
+    }
+
+    function showTooltip() {
+      const lang = getLang();
+      tooltipText.textContent = autoMessages[lang] || autoMessages.en;
+      tooltip.classList.add('show');
+      chatToggle.classList.add('has-notification');
+    }
+
+    function hideTooltip() {
+      tooltip.classList.remove('show');
+      chatToggle.classList.remove('has-notification');
+    }
+
+    // Show tooltip after 5 seconds
+    setTimeout(() => {
+      if (!chatOpen) {
+        showTooltip();
+      }
+    }, 5000);
+
+    // Toggle chat
+    chatToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      chatOpen = !chatOpen;
+      if (chatOpen) {
+        chatPanel.style.display = 'flex';
+        hideTooltip();
+        chatInput.placeholder = placeholders[getLang()] || placeholders.en;
+        setTimeout(() => chatInput.focus(), 100);
+      } else {
+        chatPanel.style.display = 'none';
+      }
+    });
+
+    chatClose.addEventListener('click', (e) => {
+      e.stopPropagation();
+      chatOpen = false;
+      chatPanel.style.display = 'none';
+    });
+
+    // Drag functionality
+    let isDragging = false;
+    let dragOffsetX = 0;
+    let dragOffsetY = 0;
+
+    chatHeader.addEventListener('mousedown', (e) => {
+      if (e.target.closest('button') || e.target.closest('#ai-chat-resize')) return;
+      isDragging = true;
+      const rect = chatPanel.getBoundingClientRect();
+      dragOffsetX = e.clientX - rect.left;
+      dragOffsetY = e.clientY - rect.top;
+      chatPanel.style.transition = 'none';
+      chatPanel.style.position = 'fixed';
+      chatPanel.style.left = rect.left + 'px';
+      chatPanel.style.top = rect.top + 'px';
+      chatPanel.style.right = 'auto';
+      chatPanel.style.bottom = 'auto';
+      e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      const panelW = chatPanel.offsetWidth;
+      const panelH = chatPanel.offsetHeight;
+      const x = Math.max(0, Math.min(e.clientX - dragOffsetX, window.innerWidth - panelW));
+      const y = Math.max(0, Math.min(e.clientY - dragOffsetY, window.innerHeight - panelH));
+      chatPanel.style.position = 'fixed';
+      chatPanel.style.left = x + 'px';
+      chatPanel.style.top = y + 'px';
+      chatPanel.style.right = 'auto';
+      chatPanel.style.bottom = 'auto';
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (isDragging) {
+        isDragging = false;
+        chatPanel.style.transition = '';
+      }
+    });
+
+    // Resize functionality
+    let isResizing = false;
+    let resizeStartX = 0;
+    let resizeStartY = 0;
+    let startWidth = 0;
+    let startHeight = 0;
+    let startLeft = 0;
+    let startTop = 0;
+
+    chatResize.addEventListener('mousedown', (e) => {
+      isResizing = true;
+      resizeStartX = e.clientX;
+      resizeStartY = e.clientY;
+      const rect = chatPanel.getBoundingClientRect();
+      startWidth = rect.width;
+      startHeight = rect.height;
+      startLeft = rect.left;
+      startTop = rect.top;
+      chatPanel.style.transition = 'none';
+      chatPanel.style.position = 'fixed';
+      chatPanel.style.left = startLeft + 'px';
+      chatPanel.style.top = startTop + 'px';
+      chatPanel.style.right = 'auto';
+      chatPanel.style.bottom = 'auto';
+      e.preventDefault();
+      e.stopPropagation();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!isResizing) return;
+      const dx = e.clientX - resizeStartX;
+      const dy = e.clientY - resizeStartY;
+      let newWidth = Math.max(Math.min(startWidth - dx, 700), 300);
+      let newHeight = Math.max(Math.min(startHeight - dy, 700), 350);
+      let newLeft = startLeft + (startWidth - newWidth);
+      let newTop = startTop + (startHeight - newHeight);
+      if (newLeft < 0) { newLeft = 0; newWidth = startLeft + startWidth; }
+      if (newTop < 0) { newTop = 0; newHeight = startTop + startHeight; }
+      newWidth = Math.max(newWidth, 300);
+      newHeight = Math.max(newHeight, 350);
+      panelWidth = newWidth;
+      panelHeight = newHeight;
+      chatPanel.style.width = panelWidth + 'px';
+      chatPanel.style.height = panelHeight + 'px';
+      chatPanel.style.position = 'fixed';
+      chatPanel.style.left = newLeft + 'px';
+      chatPanel.style.top = newTop + 'px';
+      chatPanel.style.right = 'auto';
+      chatPanel.style.bottom = 'auto';
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (isResizing) {
+        isResizing = false;
+        chatPanel.style.transition = '';
+      }
+    });
+
+    // Update tooltip on language change
+    document.addEventListener('langchange', () => {
+      if (!chatOpen && tooltip.classList.contains('show')) {
+        const lang = getLang();
+        tooltipText.textContent = autoMessages[lang] || autoMessages.en;
+      }
+      chatInput.placeholder = placeholders[getLang()] || placeholders.en;
+    });
+
+    // Chat functions
+    let conversationHistory = [
+      {
+        role: 'system',
+        content: `You are an AI assistant for Lare's developer portfolio website. You can ONLY answer questions about:
+- The website itself (sections, features, technologies used to build it)
+- Lare (the developer): skills, projects, tech stack, experience
+- The portfolio projects shown on the site
+
+For ANY other topic (general knowledge, math, science, personal opinions, coding help unrelated to this site, etc.), respond with:
+"I'm sorry, I'm only designed to answer questions about Lare's portfolio and this website. I can't help with other topics."
+
+Never break character. Never answer off-topic questions even if the user insists.`
+      }
+    ];
+
+    function addMessage(role, content) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'flex gap-3';
+
+      if (role === 'user') {
+        messageDiv.innerHTML = `
+          <div class="flex-1 flex justify-end">
+            <div class="bg-[var(--accent)] text-[var(--bg-primary)] rounded-lg rounded-tr-none p-3 max-w-[80%]">
+              <p class="text-sm">${escapeHtml(content)}</p>
+            </div>
+          </div>
+        `;
+      } else {
+        messageDiv.innerHTML = `
+          <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
+            <img src="/chat-avatar.png" alt="AI Assistant" class="w-full h-full object-cover" />
+          </div>
+          <div class="bg-[var(--bg-tertiary)] rounded-lg rounded-tl-none p-3 max-w-[80%]">
+            <p class="text-[var(--text-primary)] text-sm">${escapeHtml(content)}</p>
+          </div>
+        `;
+      }
+
+      chatMessages.appendChild(messageDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function addLoadingIndicator() {
+      const loadingDiv = document.createElement('div');
+      loadingDiv.id = 'ai-loading';
+      loadingDiv.className = 'flex gap-3';
+      loadingDiv.innerHTML = `
+        <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
+          <img src="/chat-avatar.png" alt="AI Assistant" class="w-full h-full object-cover" />
+        </div>
+        <div class="bg-[var(--bg-tertiary)] rounded-lg rounded-tl-none p-3">
+          <div class="flex gap-1">
+            <span class="w-2 h-2 bg-[var(--text-muted)] rounded-full animate-bounce" style="animation-delay: 0ms;"></span>
+            <span class="w-2 h-2 bg-[var(--text-muted)] rounded-full animate-bounce" style="animation-delay: 150ms;"></span>
+            <span class="w-2 h-2 bg-[var(--text-muted)] rounded-full animate-bounce" style="animation-delay: 300ms;"></span>
+          </div>
+        </div>
+      `;
+      chatMessages.appendChild(loadingDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function removeLoadingIndicator() {
+      const loading = document.getElementById('ai-loading');
+      if (loading) loading.remove();
+    }
+
+    async function sendMessage(message) {
+      conversationHistory.push({ role: 'user', content: message });
+
+      addMessage('user', message);
+      addLoadingIndicator();
+
+      chatInput.value = '';
+      chatInput.disabled = true;
+
+      try {
+        const response = await fetch(MIMO_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            messages: conversationHistory
+          })
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || `API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const assistantMessage = data.choices[0].message.content;
+
+        conversationHistory.push({ role: 'assistant', content: assistantMessage });
+
+        removeLoadingIndicator();
+        addMessage('assistant', assistantMessage);
+
+      } catch (error) {
+        removeLoadingIndicator();
+        addMessage('assistant', `Error: ${error.message}`);
+      } finally {
+        chatInput.disabled = false;
+        chatInput.focus();
+      }
+    }
+
+    chatForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const message = chatInput.value.trim();
+      if (message) {
+        sendMessage(message);
+      }
+    });
+  });
+</script>

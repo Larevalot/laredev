@@ -1,0 +1,76 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'Lare Dev - Full Stack Developer Portfolio' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+    <script is:inline>
+      const theme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+      const lang = localStorage.getItem('lang') || 'en';
+      document.documentElement.setAttribute('lang', lang);
+    </script>
+    <title>{title}</title>
+  </head>
+  <body class="min-h-screen">
+    <div class="grid-bg fixed inset-0 pointer-events-none z-0"></div>
+    <div class="marble-texture fixed inset-0 pointer-events-none z-0 opacity-10"></div>
+    <div class="cursor-glow" id="cursor-glow"></div>
+    <div class="relative z-10">
+      <slot />
+    </div>
+  </body>
+</html>
+
+<script is:inline>
+  const cursorGlow = document.getElementById('cursor-glow');
+  let mouseX = 0, mouseY = 0;
+  let glowX = 0, glowY = 0;
+
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    cursorGlow.classList.add('active');
+  });
+
+  document.addEventListener('mouseleave', () => {
+    cursorGlow.classList.remove('active');
+  });
+
+  function animateGlow() {
+    glowX += (mouseX - glowX) * 0.06;
+    glowY += (mouseY - glowY) * 0.06;
+    cursorGlow.style.left = glowX + 'px';
+    cursorGlow.style.top = glowY + 'px';
+    requestAnimationFrame(animateGlow);
+  }
+  animateGlow();
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+  document.querySelectorAll('.section-reveal').forEach(el => observer.observe(el));
+</script>
+
+<style is:global>
+  @import '../styles/global.css';
+</style>

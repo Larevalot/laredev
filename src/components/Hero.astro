@@ -1,0 +1,161 @@
+---
+---
+
+<section id="home" class="relative" style="height: 100vh; display: flex; align-items: center; justify-content: center; overflow: visible;">
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute top-1/3 left-1/4 w-[500px] h-[500px] bg-[var(--gold-dark)] rounded-full blur-[150px] opacity-30 animate-pulse-glow"></div>
+    <div class="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] bg-[var(--gold-deep)] rounded-full blur-[120px] opacity-20 animate-pulse-glow delay-700"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[var(--gold)] rounded-full blur-[200px] opacity-10"></div>
+  </div>
+
+  <div class="absolute inset-0 pointer-events-none" id="particles-container">
+    <div class="orbit-ring w-[350px] h-[350px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-12">
+      <div class="orbit-dot animate-orbit" style="animation-duration: 18s;"></div>
+    </div>
+    <div class="orbit-ring w-[550px] h-[550px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-8">
+      <div class="orbit-dot animate-orbit" style="animation-duration: 28s; animation-delay: -10s;"></div>
+    </div>
+    <div class="orbit-ring w-[750px] h-[750px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-4">
+      <div class="orbit-dot animate-orbit" style="animation-duration: 40s; animation-delay: -18s;"></div>
+    </div>
+  </div>
+
+  <div class="relative z-10 mx-auto px-6 text-center" style="max-width: 90rem; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+    <div class="animate-slide-up">
+      <div class="inline-flex items-center justify-center gap-3 px-5 py-2.5 bg-[var(--glass-bg)] border border-[var(--glass-border)] backdrop-blur-xl mb-4">
+        <span id="hero-greeting" class="text-[var(--gold-glow)] font-mono text-xs tracking-[0.3em] uppercase">Hello, I'm</span>
+      </div>
+    </div>
+
+    <div class="animate-slide-up delay-200">
+      <h1 class="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-extrabold mb-6 leading-none">
+        <span class="gradient-text" data-text="Lare Dev" data-i18n="hero.name">Lare Dev</span>
+      </h1>
+    </div>
+
+    <div class="animate-slide-up delay-400">
+      <div class="flex items-center justify-center gap-4 mb-8">
+        <div class="h-[1px] w-16 bg-gradient-to-r from-transparent to-[var(--gold)] opacity-30"></div>
+        <h2 class="text-lg sm:text-xl md:text-2xl text-[var(--text-secondary)] font-light tracking-[0.25em] uppercase" data-i18n="hero.title">
+          Full Stack Developer
+        </h2>
+        <div class="h-[1px] w-16 bg-gradient-to-l from-transparent to-[var(--gold)] opacity-30"></div>
+      </div>
+    </div>
+
+    <div class="animate-slide-up delay-500">
+      <p class="text-[var(--text-muted)] text-base max-w-xl mx-auto mb-12 leading-relaxed italic" data-i18n="hero.subtitle">
+        Crafting digital experiences with the precision of ancient artisans
+      </p>
+    </div>
+
+    <div class="animate-slide-up delay-600 flex flex-col sm:flex-row items-center justify-center gap-5">
+      <a href="#projects" class="cosmic-btn">
+        <span data-i18n="hero.cta">Explore My Work</span>
+      </a>
+      <a href="#contact" class="cosmic-btn-outline" data-i18n="hero.cta2">
+        Contact Me
+      </a>
+    </div>
+  </div>
+
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 animate-slide-up delay-1000">
+    <div class="flex flex-col items-center gap-3">
+      <div class="w-[1px] h-12 bg-gradient-to-b from-transparent via-[var(--gold)] to-transparent opacity-20"></div>
+      <span class="text-[10px] font-mono tracking-[0.4em] uppercase text-[var(--text-muted)]">scroll</span>
+      <div class="w-4 h-6 border border-[var(--gold)] opacity-20 flex items-start justify-center p-1">
+        <div class="w-0.5 h-1.5 bg-[var(--gold-glow)] animate-float"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[var(--bg-primary)] to-transparent pointer-events-none"></div>
+</section>
+
+<script is:inline>
+  function createParticles() {
+    const container = document.getElementById('particles-container');
+    if (!container) return;
+    
+    for (let i = 0; i < 25; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.top = Math.random() * 100 + '%';
+      particle.style.animationDelay = Math.random() * 10 + 's';
+      particle.style.animationDuration = (12 + Math.random() * 20) + 's';
+      particle.style.animation = `float-particle ${12 + Math.random() * 20}s linear infinite`;
+      particle.style.width = (1 + Math.random() * 2) + 'px';
+      particle.style.height = particle.style.width;
+      container.appendChild(particle);
+    }
+  }
+  createParticles();
+
+  // Glitch greeting animation
+  const greetings = [
+    "Hello, I'm",
+    "Ciao, sono",
+    "你好，我是",
+    "こんにちは、",
+    "Hola, soy"
+  ];
+  
+  let currentGreeting = 0;
+  const greetingEl = document.getElementById('hero-greeting');
+  
+  function glitchEffect() {
+    if (!greetingEl) return;
+    
+    greetingEl.classList.add('glitching');
+    const original = greetingEl.textContent;
+    const glitchChars = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+    let iterations = 0;
+    const maxIterations = 8;
+    
+    const glitchInterval = setInterval(() => {
+      greetingEl.textContent = original
+        .split('')
+        .map((char, i) => {
+          if (i < iterations) return original[i];
+          return glitchChars[Math.floor(Math.random() * glitchChars.length)];
+        })
+        .join('');
+      
+      iterations += original.length / maxIterations;
+      
+      if (iterations >= original.length) {
+        clearInterval(glitchInterval);
+        currentGreeting = (currentGreeting + 1) % greetings.length;
+        greetingEl.textContent = greetings[currentGreeting];
+        greetingEl.classList.remove('glitching');
+      }
+    }, 50);
+  }
+  
+  setInterval(glitchEffect, 3000);
+</script>
+
+<style>
+  @keyframes glitch-skew {
+    0% { transform: skew(0deg); }
+    20% { transform: skew(-2deg); }
+    40% { transform: skew(1deg); }
+    60% { transform: skew(-1deg); }
+    80% { transform: skew(0.5deg); }
+    100% { transform: skew(0deg); }
+  }
+  
+  #hero-greeting {
+    display: inline-block;
+    min-width: 120px;
+    text-align: center;
+  }
+  
+  #hero-greeting.glitching {
+    animation: glitch-skew 0.3s ease-in-out;
+    text-shadow: 
+      2px 0 var(--accent-glow),
+      -2px 0 var(--accent-light);
+  }
+</style>

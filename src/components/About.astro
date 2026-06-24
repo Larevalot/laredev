@@ -1,0 +1,58 @@
+---
+const stats = [
+  { value: '5+', key: 'about.years' },
+  { value: '30+', key: 'about.projects' },
+  { value: '15+', key: 'about.tech' },
+];
+---
+
+<section id="about" class="section-viewport relative overflow-hidden">
+  <div class="mesh-bg"></div>
+  <div class="mesh-orb w-[400px] h-[400px] -top-20 -right-20 bg-olive-400"></div>
+  <div class="mesh-orb w-[300px] h-[300px] -bottom-20 -left-20 bg-olive-300" style="animation-delay: -10s;"></div>
+  
+  <div class="section-divider"></div>
+
+  <div class="max-w-5xl mx-auto px-6 w-full relative z-10">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="text-accent-glow font-mono text-xs tracking-[0.3em] uppercase">I</span>
+      <div class="h-[1px] flex-1 bg-gradient-to-r from-accent to-transparent opacity-15"></div>
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-8 items-center">
+      <div>
+        <h2 class="text-3xl sm:text-4xl font-bold mb-4 tracking-tight" data-i18n="about.title">
+          About <span class="gradient-text">Me</span>
+        </h2>
+
+        <p class="text-text-secondary leading-relaxed mb-3" data-i18n="about.p1">
+          Passionate full-stack developer crafting digital experiences with the precision of ancient artisans. I build scalable, elegant web applications that stand the test of time.
+        </p>
+        <p class="text-text-muted leading-relaxed" data-i18n="about.p2">
+          With deep expertise spanning frontend frameworks, backend architectures, and database systems, I transform complex ideas into seamless digital experiences built with classical elegance.
+        </p>
+      </div>
+
+      <div class="glass-card p-5">
+        <div class="aspect-video bg-gradient-to-br from-olive-900 via-bg-card to-bg-tertiary relative overflow-hidden">
+          <img src="/images/aboutme/larevalot.webp" alt="Larevalot" class="w-full h-full object-cover" loading="lazy" />
+          <div class="absolute bottom-3 left-3 right-3 flex justify-between">
+            <span class="text-accent-glow font-mono text-[9px] tracking-[0.2em]">ARTISAN</span>
+            <span class="text-text-muted font-mono text-[9px]">MMXXVI</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-3 gap-4 mt-6">
+      {stats.map(stat => (
+        <div class="glass-card p-4 text-center">
+          <div class="text-3xl font-bold gradient-text mb-1">{stat.value}</div>
+          <div class="text-[10px] text-text-muted font-mono tracking-wider uppercase" data-i18n={stat.key}>
+            {stat.key.split('.').pop()}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

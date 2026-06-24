@@ -1,0 +1,209 @@
+---
+const projects = [
+  {
+    title: 'TaskFlow',
+    description: 'Aplicación web de gestión de proyectos y tareas con autenticación, tablero kanban, prioridades y estadísticas en tiempo real.',
+    tags: ['React', 'TypeScript', 'Node.js', 'PostgreSQL'],
+    image: '/images/projects/taskflow.webp',
+    link: 'https://taskflow-frntnd.vercel.app/',
+    github: 'https://github.com/Larevalot',
+    status: 'LIVE',
+  },
+  {
+    title: 'larEditor',
+    description: 'Editor de video de código abierto basado en la web. Edición multipista, transiciones y exportación directa desde el navegador.',
+    tags: ['JavaScript', 'Web APIs', 'Canvas', 'Open Source'],
+    image: '/images/projects/lareditor.webp',
+    link: 'https://lareditor.vercel.app/',
+    github: 'https://github.com/Larevalot',
+    status: 'BETA',
+  },
+  {
+    title: 'Ekinox',
+    description: 'Plataforma logística que conecta comercios y clientes mediante envíos aéreos ultrarrápidos a larga distancia en cuestión de horas.',
+    tags: ['Web Platform', 'Logistics', 'API', 'Real-time Tracking'],
+    image: '/images/projects/ekinox.webp',
+    link: '#',
+    github: 'https://github.com/Larevalot',
+    status: 'ACTIVE',
+  },
+  {
+    title: '[c]lareWeb',
+    description: 'Plataforma web para leer y escribir historias anónimas. Un espacio donde las palabras fluyen sin identidad.',
+    tags: ['Astro', 'TailwindCSS', 'CMS', 'Community'],
+    image: '/images/projects/clareweb.webp',
+    link: 'https://clare-web-ivory.vercel.app/',
+    github: 'https://github.com/Larevalot',
+    status: 'LIVE',
+  },
+  {
+    title: 'ChatSync',
+    description: 'Plataforma de mensajería en tiempo real con autenticación, salas de chat y sincronización instantánea entre dispositivos.',
+    tags: ['React', 'WebSocket', 'Node.js', 'Real-time'],
+    image: '/images/projects/chatsync.webp',
+    link: 'https://chatsync-full-backend.vercel.app/login',
+    github: 'https://github.com/Larevalot',
+    status: 'LIVE',
+  },
+];
+---
+
+<style>
+  .projects-outer {
+    overflow: hidden;
+    position: relative;
+    cursor: grab;
+  }
+
+  .projects-outer:active {
+    cursor: grabbing;
+  }
+
+  .projects-outer::before,
+  .projects-outer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 80px;
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  .projects-outer::before {
+    left: 0;
+    background: linear-gradient(to right, var(--bg-primary), transparent);
+  }
+
+  .projects-outer::after {
+    right: 0;
+    background: linear-gradient(to left, var(--bg-primary), transparent);
+  }
+
+  .projects-track {
+    display: flex;
+    gap: 1.25rem;
+    will-change: transform;
+  }
+
+  .project-item {
+    flex-shrink: 0;
+    width: 340px;
+  }
+</style>
+
+<section id="projects" class="section-viewport relative overflow-hidden">
+  <div class="mesh-bg"></div>
+  <div class="mesh-orb w-[500px] h-[500px] top-1/4 -right-24 bg-olive-300" style="animation-delay: -5s;"></div>
+  <div class="mesh-orb w-[400px] h-[400px] bottom-1/4 -left-24 bg-olive-400" style="animation-delay: -15s;"></div>
+  
+  <div class="section-divider"></div>
+
+  <div class="w-full relative z-10">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="flex items-center gap-4 mb-4">
+        <span class="text-accent-glow font-mono text-xs tracking-[0.3em] uppercase">III</span>
+        <div class="h-[1px] flex-1 bg-gradient-to-r from-accent to-transparent opacity-15"></div>
+      </div>
+      <div class="text-center mb-6">
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-2 tracking-tight" data-i18n="projects.title">
+          Featured <span class="gradient-text">Projects</span>
+        </h2>
+        <p class="text-text-muted max-w-xl mx-auto italic" data-i18n="projects.subtitle">
+          Works crafted with dedication and precision
+        </p>
+      </div>
+    </div>
+
+    <div class="projects-outer" id="projects-carousel">
+      <div class="projects-track" id="projects-track">
+        {projects.map((project) => (
+          <div class="project-item">
+            <div class="project-card glass-card holo-shimmer overflow-hidden group h-full flex flex-col">
+              <div class="relative h-44 overflow-hidden">
+                <img src={project.image} alt={project.title} class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
+                <div class="absolute inset-0 bg-gradient-to-t from-bg-card via-transparent to-transparent"></div>
+                <div class="absolute top-3 left-3 z-10">
+                  <span class="px-2.5 py-1 text-[9px] font-mono tracking-[0.2em] uppercase" style="background: var(--bg-elevated); color: var(--accent-glow); border: 1px solid var(--border-subtle);">{project.status}</span>
+                </div>
+                <div class="absolute top-3 right-3 flex gap-2 z-10">
+                  <a href={project.link} class="w-8 h-8 bg-bg-card border border-border-subtle flex items-center justify-center text-text-muted hover:text-accent-glow hover:border-accent-light transition-all duration-300" target="_blank" rel="noopener noreferrer">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
+                  </a>
+                  <a href={project.github} class="w-8 h-8 bg-bg-card border border-border-subtle flex items-center justify-center text-text-muted hover:text-accent-glow hover:border-accent-light transition-all duration-300" target="_blank" rel="noopener noreferrer">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                  </a>
+                </div>
+              </div>
+              <div class="p-4 relative z-10 flex-1 flex flex-col">
+                <h3 class="text-base font-semibold text-text-primary mb-1 group-hover:text-accent-glow transition-colors duration-300 tracking-wide">{project.title}</h3>
+                <p class="text-text-muted text-xs mb-3 leading-relaxed flex-1">{project.description}</p>
+                <div class="flex flex-wrap gap-1.5">
+                  {project.tags.map(tag => (
+                    <span class="px-2 py-0.5 text-[8px] font-mono tracking-wider uppercase" style="background: var(--bg-elevated); color: var(--accent-glow); border: 1px solid var(--border-subtle);">{tag}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  const carousel = document.getElementById('projects-carousel');
+  const track = document.getElementById('projects-track');
+
+  const items = track.innerHTML;
+  track.innerHTML = items + items + items + items;
+
+  let position = 0;
+  let speed = 0.5;
+  let isDragging = false;
+  let startX = 0;
+  let dragStartPos = 0;
+
+  const singleSetWidth = track.scrollWidth / 4;
+
+  function wrapPosition() {
+    while (position > 0) position -= singleSetWidth;
+    while (position < -singleSetWidth * 2) position += singleSetWidth;
+  }
+
+  function animate() {
+    if (!isDragging) {
+      position -= speed;
+      wrapPosition();
+    }
+    track.style.transform = `translateX(${position}px)`;
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+
+  carousel.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    startX = e.clientX;
+    dragStartPos = position;
+    e.preventDefault();
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    const diff = e.clientX - startX;
+    position = dragStartPos + diff;
+    wrapPosition();
+  });
+
+  window.addEventListener('mouseup', () => {
+    isDragging = false;
+  });
+
+  carousel.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    position -= e.deltaY * 2;
+    wrapPosition();
+  }, { passive: false });
+</script>

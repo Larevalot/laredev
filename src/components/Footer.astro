@@ -1,0 +1,36 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="relative py-10 border-t border-[var(--border-subtle)]">
+  <div class="absolute top-0 left-10% right-10% h-px bg-gradient-to-r from-transparent via-[var(--gold)] to-transparent opacity-15"></div>
+  
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-3">
+        <span class="text-[var(--text-primary)] font-semibold tracking-wide">
+          <span class="text-[var(--text-muted)]">[p]</span> lare<span class="text-[var(--gold-glow)]">Web</span>
+        </span>
+      </div>
+
+      <div class="flex items-center gap-6">
+        <div class="flex items-center gap-2 text-[10px] text-[var(--text-muted)] font-mono tracking-widest uppercase">
+          <span class="w-1 h-1 bg-[var(--gold-glow)] animate-pulse"></span>
+          <span>System Online</span>
+        </div>
+        <div class="h-4 w-[1px] bg-[var(--border-subtle)]"></div>
+        <div class="text-[10px] text-[var(--text-muted)] font-mono tracking-wider">
+          <span>&copy; {year} lareWeb.</span>
+          <span class="ml-1" data-i18n="footer.rights">All rights reserved.</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 text-[10px] text-[var(--text-muted)] tracking-wider">
+        <span data-i18n="footer.built">Built with</span>
+        <span class="text-[var(--gold-glow)] font-mono">Astro</span>
+        <span data-i18n="footer.and">&</span>
+        <span class="text-[var(--gold-glow)] font-mono">TailwindCSS</span>
+      </div>
+    </div>
+  </div>
+</footer>

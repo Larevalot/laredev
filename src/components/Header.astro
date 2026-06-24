@@ -1,0 +1,158 @@
+---
+const navItems = [
+  { key: 'nav.home', href: '#home' },
+  { key: 'nav.about', href: '#about' },
+  { key: 'nav.tech', href: '#tech' },
+  { key: 'nav.projects', href: '#projects' },
+  { key: 'nav.contact', href: '#contact' },
+];
+---
+
+<header id="main-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500">
+  <div class="max-w-7xl mx-auto px-6 py-3">
+    <nav class="flex items-center justify-between">
+      <a href="#home" class="flex items-center group">
+        <span class="text-[var(--text-primary)] font-semibold text-lg tracking-wide">
+          <span class="text-[var(--text-muted)]">[p]</span> lare<span class="text-[var(--gold-glow)]">Web</span>
+        </span>
+      </a>
+
+      <div class="hidden md:flex items-center gap-1 bg-[var(--glass-bg)] backdrop-blur-xl px-3 py-1.5 border border-[var(--glass-border)]">
+        {navItems.map(item => (
+          <a
+            href={item.href}
+            class="px-4 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--gold-glow)] transition-all duration-300 hover:bg-[var(--gold-dark)] relative group tracking-wider uppercase"
+            data-i18n={item.key}
+          >
+            <span class="relative z-10 text-xs font-medium">{item.key.split('.').pop()}</span>
+            <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[1px] bg-[var(--gold-glow)] transition-all duration-300 group-hover:w-8"></span>
+          </a>
+        ))}
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button
+          id="lang-toggle"
+          class="relative px-3 py-1.5 text-xs font-mono font-semibold tracking-wider transition-all duration-300 hover:bg-[var(--gold-dark)] border border-transparent hover:border-[var(--border-glow)] text-[var(--text-secondary)] hover:text-[var(--gold-glow)]"
+          aria-label="Toggle language"
+        >
+          <span id="lang-label">EN</span>
+        </button>
+
+        <button
+          id="theme-toggle"
+          class="relative w-10 h-10 flex items-center justify-center transition-all duration-300 hover:bg-[var(--gold-dark)] border border-transparent hover:border-[var(--border-glow)]"
+          aria-label="Toggle theme"
+        >
+          <svg id="sun-icon" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          <svg id="moon-icon" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+        </button>
+
+        <button
+          id="mobile-menu-toggle"
+          class="md:hidden w-10 h-10 flex items-center justify-center transition-all duration-300 hover:bg-[var(--gold-dark)] border border-transparent hover:border-[var(--border-glow)]"
+          aria-label="Toggle menu"
+        >
+          <svg id="menu-icon" class="w-5 h-5 text-[var(--text-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <svg id="close-icon" class="w-5 h-5 text-[var(--text-primary)] hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </nav>
+
+    <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4 border-t border-[var(--border-subtle)]">
+      <div class="flex flex-col gap-1 pt-4">
+        {navItems.map(item => (
+          <a
+            href={item.href}
+            class="px-4 py-3 text-[var(--text-secondary)] hover:text-[var(--gold-glow)] transition-all duration-300 hover:bg-[var(--gold-dark)] mobile-nav-link tracking-wider uppercase text-xs font-medium"
+            data-i18n={item.key}
+          >
+            {item.key.split('.').pop()}
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</header>
+
+<script is:inline>
+  function getTheme() { return localStorage.getItem('theme') || 'dark'; }
+  function setTheme(theme) {
+    localStorage.setItem('theme', theme);
+    document.documentElement.setAttribute('data-theme', theme);
+    updateThemeIcons(theme);
+  }
+  function updateThemeIcons(theme) {
+    const sun = document.getElementById('sun-icon');
+    const moon = document.getElementById('moon-icon');
+    if (theme === 'dark') {
+      sun?.classList.add('hidden');
+      moon?.classList.remove('hidden');
+    } else {
+      sun?.classList.remove('hidden');
+      moon?.classList.add('hidden');
+    }
+  }
+  updateThemeIcons(getTheme());
+  document.getElementById('theme-toggle')?.addEventListener('click', () => {
+    setTheme(getTheme() === 'dark' ? 'light' : 'dark');
+  });
+
+  function getLang() { return localStorage.getItem('lang') || 'en'; }
+  function setLang(lang) {
+    localStorage.setItem('lang', lang);
+    document.documentElement.setAttribute('lang', lang);
+    document.getElementById('lang-label').textContent = lang.toUpperCase();
+    document.dispatchEvent(new CustomEvent('langchange', { detail: { lang } }));
+  }
+  document.getElementById('lang-label').textContent = getLang().toUpperCase();
+  document.getElementById('lang-toggle')?.addEventListener('click', () => {
+    setLang(getLang() === 'en' ? 'es' : 'en');
+  });
+
+  const mobileToggle = document.getElementById('mobile-menu-toggle');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const menuIcon = document.getElementById('menu-icon');
+  const closeIcon = document.getElementById('close-icon');
+  let mobileOpen = false;
+
+  mobileToggle?.addEventListener('click', () => {
+    mobileOpen = !mobileOpen;
+    mobileMenu?.classList.toggle('hidden');
+    menuIcon?.classList.toggle('hidden');
+    closeIcon?.classList.toggle('hidden');
+  });
+
+  document.querySelectorAll('.mobile-nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      mobileOpen = false;
+      mobileMenu?.classList.add('hidden');
+      menuIcon?.classList.remove('hidden');
+      closeIcon?.classList.add('hidden');
+    });
+  });
+
+  const header = document.getElementById('main-header');
+  let lastScroll = 0;
+  window.addEventListener('scroll', () => {
+    const current = window.scrollY;
+    if (current > 50) {
+      header.style.background = 'var(--glass-bg)';
+      header.style.backdropFilter = 'blur(16px) saturate(1.1)';
+      header.style.borderBottom = '1px solid var(--glass-border)';
+    } else {
+      header.style.background = 'transparent';
+      header.style.backdropFilter = 'none';
+      header.style.borderBottom = '1px solid transparent';
+    }
+    lastScroll = current;
+  });
+</script>
